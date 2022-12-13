@@ -3,6 +3,13 @@ class Program
 {
     static void Main(string[] args)
     {
+        void calcSize(List<Directory> dirs)
+        {
+            foreach(Directory dir in dirs)
+            {
+                Console.WriteLine("name: {0} size: {1} parentDirs: {2}", dir.name, dir.sizeOfFiles, dir.parentDirs);
+            }
+        }
         Console.WriteLine("AOC2022 Day 7!");
         String input = File.ReadAllText(@"data.txt");
 
@@ -44,13 +51,13 @@ class Program
                         // get immediate parent ( last of parentdirs, split på /)
                         // set CD to this parent
                         // set parentDirs to what is was minus this dir
-                        Console.WriteLine("pdlen:{0} ", currentDirectory.parentDirs.Length);
+                        //Console.WriteLine("pdlen:{0} ", currentDirectory.parentDirs.Length);
                         string[] tempDirs = currentDirectory.parentDirs.Split('/');
-                        foreach (string td in tempDirs)
-                        {
-                            Console.WriteLine("td: {0}", td);
-                        }
-                        Console.WriteLine("len:{0} ", tempDirs.Length);
+                        //foreach (string td in tempDirs)
+                        //{
+                        //    Console.WriteLine("td: {0}", td);
+                        //}
+                        //Console.WriteLine("len:{0} ", tempDirs.Length);
                         if (tempDirs.Length == 2 && tempDirs[tempDirs.Length - 1] == "")
                         {
                             currentDirectory.name = "/";
@@ -96,22 +103,49 @@ class Program
             } else
             {
                 Console.WriteLine("listing detected: {0}", row);
+                // check if dir exists
+                string[] parts = row.Split(' ');
+                Directory tempDir = new Directory();
+                tempDir.name = currentDirectory.name;
+                tempDir.parentDirs = currentDirectory.parentDirs;
+
+                List<Directory> it = allDirs.Where(item => item.name == currentDirectory.name).ToList();
+                int itCount = it.Count();
+                Console.WriteLine("hitlen: {0}", itCount);
+                if (itCount == 0)
+                {
+                    // add it!
+                    if (parts[0] != "dir")
+                    {
+                        tempDir.sizeOfFiles += int.Parse(parts[0]);
+                    }
+                    allDirs.Add(tempDir);
+                }
+                else
+                {
+                    if (parts[0] != "dir")
+                    {
+                        it[0].sizeOfFiles += int.Parse(parts[0]);
+                    }
+                    
+                }
+
             }
 
         }
-
+        calcSize(allDirs);
     }
 }
 public class Directory
 {
     public string name;
     public string parentDirs;
-    public int sizeOfFiles;
+    public int sizeOfFiles = 0;
 }
 
 public class AFile
 {
     public string name;
     public string parentDirs;
-    public int size;
+    public int size = 0;
 }
